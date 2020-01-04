@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        .wrapper {
+            width: 400px;
+            height: 400px;
+            margin: 100px auto;
+            position: relative;
+        }
+
+
+        .pan {
+            width: 400px;
+            height: 400px;
+        }
+
+        .btn {
+            width: 100px;
+            height: 120px;
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            margin: auto;
+        }
+
+        .button {
+            width: 130px;
+            height: 150px;
+            position: absolute;
+            top: -23px;
+            left: -15px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="wrapper">
+        <div class="wheel">
+            <img class="pan" src="./img/pan.png" alt="">
+        </div>
+        <div class="btn">
+            <img class="button" src="./img/btn.png" alt="">
+        </div>
+    </div>
+
+    <script>
+        //基础写法
+        // var wheel = document.getElementsByClassName('wheel')[0];
+        // var button = document.getElementsByClassName('button')[0];
+        // var key = true;
+        // var deg = 0;
+        // button.onclick = function () {
+        //     if (key) {
+        //         deg = Math.random() * 360;
+        //         var myDeg = deg + 8 * 360;
+        //         wheel.style.transform = `rotate(${myDeg}deg)`;
+        //         wheel.style.transition = `all 4s`;
+        //         key = false;
+        //     }
+
+        // }
+        // wheel.addEventListener("webkitTransitionEnd", function () {
+        //     console.log("end");
+        //     key = true;
+        //     wheel.style.transform = `rotate(${deg}deg)`;
+        //     wheel.style.transition = `none`;
+        //     selectAward(deg);
+        // })
+
+        // function selectAward(num) {
+        //     if (num >= 0 && num < 45) {
+        //         alert("恭喜获得二等奖");
+        //     } else if (num > 45 && num < 90 || num > 135 && num < 180 || num > 225 && num < 270 || num > 315 && num < 360) {
+        //         alert("恭喜获得四等奖");
+        //     } else if (num > 90 && num < 135 || num > 270 && num < 315) {
+        //         alert("恭喜获得三等奖");
+        //     } else if (num > 180 && num < 225) {
+        //         alert("恭喜获得一等奖")
+        //     }
+        // }
+
+    </script>
+    <script>
+        /** 对象写法
+         * 
+         * 1.轮盘对象
+         * 2.按钮对象
+         * 3.轮盘有监听旋转停止功能
+         * 4.轮盘有旋转的功能
+         * 5.轮盘有奖项属性，并且有判断奖项的功能
+         * 5.轮盘有初始角度
+         * 6.轮盘有旋转结束的时间点
+         * 7.按钮有被点击的功能
+         * 8.按钮点击有生成旋转角度的功能
+         * 9.按钮有控制轮盘是否符合旋转要求的能力(判断轮盘是否旋转结束)
+        */
+    (function (win) {
+        var confAward = {
+            circle: 4
+        }
+        win.confAward = confAward; // 对外的接口，可供外界配置轮盘旋转圈数
+
+        function Wheel() {
+            this.o = document.getElementsByClassName('wheel')[0],
+                this.awards = ["一等奖", "二等奖", "三等奖", "四等奖"],
+                this.deg = 0,
+                this.rotate = this.rotate,
+                this.selectAwrad = this.selectAwrad,
+                this.listenStop = this.listenStop
+        }
+        Wheel.prototype.rotate = function () {
+            this.deg = Math.random() * 360;
+            var myDeg = this.deg + confAward.circle * 360;
+            this.o.style.transform = `rotate(${myDeg}deg)`;
+            this.o.style.transition = `all 4s`;
+        }
+        Wheel.prototype.listenStop = function () {
+            var self = this;
+            this.o.addEventListener('webkitTransitionEnd', function () {
+                console.log('end');
+                self.o.style.transform = `rotate(${self.deg}deg)`;
+                self.o.style.transition = `none`;
+                self.selectAwrad(self.deg);
+                btn.key = true; // 返回消息处
+            })
+        }
+        Wheel.prototype.selectAwrad = function (num) {
+            if (num >= 0 && num < 45) {
+                alert("恭喜获得二等奖");
+            } else if (num > 45 && num < 90 || num > 135 && num < 180 || num > 225 && num < 270 || num > 315 && num < 360) {
+                alert("恭喜获得四等奖");
+            } else if (num > 90 && num < 135 || num > 270 && num < 315) {
+                alert("恭喜获得三等奖");
+            } else if (num > 180 && num < 225) {
+                alert("恭喜获得一等奖")
+            }
+        }
+        function Btn() {
+            this.o = document.getElementsByClassName('button')[0],
+                this.key = true,
+                this.clickFn = this.clickFn,
+                this.randomDeg = this.randomDeg
+        }
+        Btn.prototype.clickFn = function () {
+            var self = this;
+            this.o.addEventListener('click', function () {
+                if (self.key) {
+                    wheel.rotate(); //消息发送处
+                    self.key = false;
+                }
+            })
+        }
+        var wheel = new Wheel();
+        wheel.listenStop();
+        var btn = new Btn();
+        btn.clickFn();
+    })(window)
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>烦人的广告</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        #adv {
+            width: 200px;
+            height: 200px;
+            border: 1px solid #111;
+            position: fixed;
+            right: 20px;
+            bottom: -200px;
+            background-color: #199;
+        }
+
+        #adv .close {
+            float: right;
+            background-color: #fff;
+            text-decoration: none;
+            font-size: 24px;
+            padding: 0px 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="adv">
+        <a href="javascript:if(advObj.timer == null){advObj.moveDown();}" class="close">×</a>
+    </div>
+    <script>
+        var advObj = {
+            self: this,
+            distance: 0, // 总移动距离
+            time: 1000, // 总移动时长
+            step: 60,  // 总移动步数
+            flag: 0,   // 帧数
+            duration: 0, //每一步的时间
+            dist: 0, //每一步的距离
+            timer: null,
+            wait: 4000, //等待4秒继续弹出
+
+            init: function () {
+                this.distance = parseFloat(getComputedStyle(adv).height);
+                this.duration = this.time / this.step;
+                this.dist = this.distance / this.step;
+                //上升
+                this.timer = setTimeout(this.moveUp(), this.duration)
+            },
+
+            moveUp: function () {
+                var bottom = parseFloat(getComputedStyle(adv).bottom);
+                adv.style.bottom = bottom + this.dist + "px";
+                this.flag++;
+                if (this.flag < this.step) {
+                    // 继续运动
+                    this.timer = setTimeout(this.moveUp.bind(this), this.duration);
+                    // 在递归加定时器时，使用bind绑定this
+                    // 为什么不用call,因为call.apply会立即执行函数，把函数结果返回，而bind会返回一个函数，等待时间到了再执行。
+                    // 如上定时器递归中，bind会等待延迟，而call不会等待延迟，只会一下子递归完立马把结果返回。
+                } else {
+                    clearTimeout(this.timer);
+                    this.timer = null;
+                    this.flag = 0;
+                }
+            },
+            moveDown: function () {
+                var bottom = parseFloat(getComputedStyle(adv).bottom);
+                adv.style.bottom = bottom - this.dist + "px";
+                this.flag++;
+                if (this.flag < this.step) {
+                    // 继续运动
+                    this.timer = setTimeout(this.moveDown.bind(this), this.duration);
+                } else {
+                    clearTimeout(this.timer);
+                    this.timer = null;
+                    this.flag = 0;
+                    setTimeout(this.init.bind(this), this.wait);
+                }
+            }
+        }
+        window.onload = function () {
+            advObj.init();
+        }
+
+    </script>
+
+</body>
+
+</html>
